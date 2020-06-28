@@ -1,0 +1,89 @@
+---
+title: "titanic"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+General Information
+```{r}
+options(digits = 3)    # report 3 significant digits
+library(tidyverse)
+library(titanic)
+library(dplyr)
+
+titanic <- titanic_train %>%
+  select(Survived, Pclass, Sex, Age, SibSp, Parch, Fare) %>%
+  mutate(Survived = factor(Survived),
+         Pclass = factor(Pclass),
+         Sex = factor(Sex))
+```
+
+
+Q1: Variable types
+```{r}
+titanic %>% mutate(group = ifelse(Sex == "male", "Male", "Female")) %>%
+  ggplot(aes(Age, ..count.., fill = group))+
+  geom_density(alpha = 0.2)
+
+```
+Q4: Survival by Sex 
+```{r}
+men <- titanic %>% filter(Sex == "male")
+women <- titanic %>% filter(Sex == "female")
+
+titanic %>% mutate(group = ifelse(Sex =="male", "Male", "Female")) %>%
+  filter(Survived == 1) %>%
+  ggplot(aes(Sex, ..count..))+
+  geom_bar()
+```
+Q5: Survival by Age
+```{r}
+titanic %>% mutate(groups = ifelse(Survived == 0, "Dead", "Alive")) %>%
+  ggplot(aes(Age, ..count.., fill = groups ))+
+  geom_density(alpha = 0.2)
+```
+Q6: Survival by Fare
+```{r}
+titanic %>% filter(Fare != 0) %>%
+  ggplot(aes(Survived, Fare))+
+    geom_boxplot()+
+    geom_point(alpha = 0.2, position = "jitter")+
+    scale_y_continuous(trans = "log2")
+  
+
+rich_titanic <- titanic %>% filter(Fare >= 500)
+```
+Q7: Survival by PassengerClass
+```{r}
+titanic %>% ggplot(aes(Pclass, ..count..))+
+  geom_bar()
+
+
+titanic %>% ggplot(aes(Pclass, ..count.., fill = Survived))+
+  geom_bar(position = position_fill())
+
+titanic %>% ggplot(aes(Survived, ..count.., fill = Pclass))+
+  geom_bar(position = position_fill())
+
+```
+Q8: Survival by Age, Sex and Passengerclass
+```{r}
+titanic %>% ggplot(aes(Age, ..count.., fill = Survived))+
+  geom_density(alpha = 0.2)+
+  scale_y_continuous()+
+  facet_wrap(vars(Pclass,Sex), nrow = 3)
+
+
+
+```
+
+
+
+
+
+
+
+
